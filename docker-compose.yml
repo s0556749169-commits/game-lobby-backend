@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  # שירות מסד הנתונים
+  db:
+    image: postgres:15
+    container_name: game_lobby_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secretpassword
+      POSTGRES_DB: game_lobby
+    ports:
+      - "5432:5432"
+    # בדיקת תקינות חכמה - מוודא שה-DB באמת מוכן לקבל חיבורים
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # שירות האפליקציה שלנו
+  app:
+    build: .
+    container_name: game_lobby_app
+    environment:
+      # דריסה של כתובת מסד הנתונים כך שתצביע לקונטיינר של ה-db
+      DATABASE_URL: postgresql://postgres:secretpassword@db:5432/game_lobby?schema=public
+    depends_on:
+      db:
+        condition: service_healthy # האפליקציה תחכה עד שה-DB יהיה ירוק ובריא
+    # הפקודה החכמה: קודם סנכרון הטבלאות ל-DB (מיגרציה אוטומטית), ואז הרצת הקוד
+    command: sh -c "npx prisma db push && node src/main.js"
