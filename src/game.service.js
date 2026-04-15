@@ -1,8 +1,11 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
+/**
+ * פונקציה לרישום משתמש למשחק
+ */
 async function joinGame(userId, gameId) {
-  // 1. מציאת המשחק ובדיקת קיומו וסטטוס ה-Waiting
+  // 1. בדיקה שהמשחק קיים ושהסטטוס שלו הוא Waiting
   const game = await prisma.game.findUnique({
     where: { id: gameId },
   });
@@ -15,7 +18,7 @@ async function joinGame(userId, gameId) {
     throw new Error("Cannot join: Game has already started or finished");
   }
 
-  // 2. בדיקה האם המשתמש כבר רשום למשחק זה
+  // 2. בדיקה שהמשתמש עדיין לא רשום למשחק זה
   const existingParticipant = await prisma.gameParticipant.findUnique({
     where: {
       userId_gameId: {
@@ -29,12 +32,12 @@ async function joinGame(userId, gameId) {
     throw new Error("User is already registered for this game");
   }
 
-  // 3. רישום המשתמש כ-Player בטבלת GameParticipant
+  // 3. רישום המשתמש לטבלת GameParticipant
   return await prisma.gameParticipant.create({
     data: {
       userId: userId,
       gameId: gameId,
-      role: "Player", // ברירת המחדל שהגדרנו ב-Schema
+      role: "Player",
     },
   });
 }
