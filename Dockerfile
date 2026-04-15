@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # חובה: יצירת הקוד של Prisma בתוך סביבת ה-Docker
-RUN npx prisma generate
+#RUN npx prisma generate
 
 # פקודת ברירת מחדל (היא תוחלף בהמשך כדי לאפשר מיגרציה)
 CMD ["node", "src/main.js"]
