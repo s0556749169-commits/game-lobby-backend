@@ -8,3 +8,47 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+// 1. הגדרת Enums (רשימות סגורות של ערכים)
+enum GameStatus {
+  Waiting
+  Live
+  Finished
+}
+
+enum ParticipantRole {
+  Admin
+  Player
+}
+
+// 2. מודל משתמש
+model User {
+  id           Int               @id @default(autoincrement())
+  username     String            @unique
+  email        String            @unique
+  participants GameParticipant[] // קשר One-to-Many לטבלת המשתתפים
+}
+
+// 3. מודל משחק
+model Game {
+  id           Int               @id @default(autoincrement())
+  status       GameStatus        @default(Waiting)
+  createdAt    DateTime          @default(now())
+  participants GameParticipant[] // קשר One-to-Many לטבלת המשתתפים
+}
+
+// 4. טבלת קשר - GameParticipant
+model GameParticipant {
+  id     Int             @id @default(autoincrement())
+  role   ParticipantRole @default(Player)
+  score  Int             @default(0)
+
+  // קשר למשתמש
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  // קשר למשחק
+  gameId Int
+  game   Game @relation(fields: [gameId], references: [id])
+
+  @@unique([userId, gameId]) // מונע מאותו משתמש להירשם פעמיים לאותו משחק
+}
