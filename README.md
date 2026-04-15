@@ -30,3 +30,5 @@ A robust Node.js backend service for managing game sessions and player matchmaki
    ```bash
    git clone <your-repository-url>
    cd game-lobby-backend
+   ## הערות חשובות (Important Notes)
+* **Docker Configuration:** בגלל מגבלות סינון אינטרנט בסביבת הפיתוח המקומית, התיקייה `node_modules` לא הוכנסה ל-`.dockerignore`. דבר זה מבטיח שה-Container יעלה בצורה תקינה גם בסביבה עם גישה מוגבלת לרשת. בסביבת Production סטנדרטית, מומלץ להחזיר את ההתעלמות מהתיקייה ולהסתמך על התקנה פנימית בתוך ה-Image.
